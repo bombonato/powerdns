@@ -4,11 +4,8 @@ services:
 
   pdns:
     container_name: pdns
-    #build: ./
     image: pdns-sqlite:4.4.0-rc1
     ports:
       - "53:53"
       - "53:53/udp"
       - "8053:8081"
-    # environment:
-      # - SQLITE_INIT_DEFAULT=false
