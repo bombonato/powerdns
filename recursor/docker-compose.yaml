@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+
+  pdns-rec:
+    container_name: pdns-rec
+    image: bombonato/powerdns:latest-rec
+    environment:
+      - RECURSOR_QUIET=no
+      - RECURSOR_API_KEY=apikey-secret-recursor-change-me
+      - RECURSOR_FORWARD_ZONES=example.com=192.168.15.15:5300
+    sysctls:
+      - net.ipv6.route.max_size=16384
+    ports:
+      - "53:53"
+      - "53:53/udp"
+      - "5382:8082"
