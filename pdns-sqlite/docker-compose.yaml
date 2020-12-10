@@ -2,10 +2,17 @@ version: "3"
 
 services:
 
-  pdns:
-    container_name: pdns
-    image: pdns-sqlite:4.4.0-rc1
+  pdns-auth:
+    container_name: pdns-auth
+    image: bombonato/powerdns:latest-auth-sqlite
+    environment:
+      - AUTH_LOGLEVEL=9
+      - AUTH_LOGDNS_DETAILS=yes
+      - AUTH_ALLOW_DNSUPDATE_FROM=192.168.0.0/24, 10.0.0.0/8, 127.0.0.0/8, ::1
+      - AUTH_API=yes
+      - AUTH_API_KEY=apikey-secret-authoritative-change-me
+      - AUTH_WEBSERVER=yes
     ports:
-      - "53:53"
-      - "53:53/udp"
-      - "8053:8081"
+      - "5300:53"
+      - "5300:53/udp"
+      - "5381:8081"

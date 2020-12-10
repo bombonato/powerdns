@@ -27,8 +27,8 @@ file_env() {
 # Loads various settings that are used elsewhere in the script
 docker_setup_env() {
     # Initialize values that might be stored in a file
-
     file_env 'POWERDNS_VERSION' $POWERDNS_VERSION
+    file_env 'AUTH_API_KEY' $AUTH_API_KEY
 }
 
 docker_setup_env
@@ -48,6 +48,28 @@ sqlite3_check_db_init() {
 
 sqlite3_check_db_init
 
+config_init() {
+    if [ ! -f /etc/powerdns/pdns.d/auth.conf ]; then
+        echo "Creating auth.conf..."
+        echo "loglevel=${AUTH_LOGLEVEL:-4}" > /etc/powerdns/pdns.d/auth.conf
+        echo "log-dns-details=${AUTH_LOGDNS_DETAILS:-no}" >> /etc/powerdns/pdns.d/auth.conf
+        echo "log-dns-queries=${AUTH_LOGDNS_QUERIES:-no}" >> /etc/powerdns/pdns.d/auth.conf
+        echo "allow-dnsupdate-from=${AUTH_ALLOW_DNSUPDATE_FROM:-127.0.0.0/8,::1}" >> /etc/powerdns/pdns.d/auth.conf
+    fi
+
+    if [ ! -f /etc/powerdns/pdns.d/api.conf ]; then
+        echo "Creating api.conf..."
+        echo "api=${AUTH_API:-no}" > /etc/powerdns/pdns.d/api.conf
+        echo "api-key=${AUTH_API_KEY:-pdns}" >> /etc/powerdns/pdns.d/api.conf
+        echo "webserver=${AUTH_WEBSERVER:-no}" >> /etc/powerdns/pdns.d/api.conf
+        echo "webserver-address=0.0.0.0" >> /etc/powerdns/pdns.d/api.conf
+        echo "webserver-allow-from=0.0.0.0/0,::/0" >> /etc/powerdns/pdns.d/api.conf
+        #echo "webserver-password=${AUTH_WEBSERVER_PASSWORD:-pdns}" >> /etc/powerdns/pdns.d/api.conf
+    fi
+}
+
+config_init 
+
 # Run pdns server
 trap "pdns_control quit" SIGHUP SIGINT SIGTERM
 
@@ -66,3 +88,5 @@ pdns_start(){
 pdns_start
 
 wait
+
+# exec "$@"
