@@ -16,3 +16,8 @@ services:
       - "5300:53"
       - "5300:53/udp"
       - "5381:8081"
+    volumes:
+      - powerdns-db:/var/lib/powerdns
+
+volumes:
+  powerdns-db:
